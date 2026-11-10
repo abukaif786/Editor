@@ -1,3 +1,4 @@
+
 name: Build ImageTextEditor APK
 
 on:
@@ -8,28 +9,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
 
       - name: Extract Project ZIP
         run: |
+          mkdir project
           unzip ImageTextEditor-Premium-TealGold.zip -d project
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
+      - name: Upgrade Android Gradle Plugin
+        run: |
+          cd project
+          sed -i "s/com.android.tools.build:gradle:3.5.3/com.android.tools.build:gradle:7.4.2/" build.gradle
+          sed -i "s/gradle-6.1.1-bin.zip/gradle-7.6.4-bin.zip/" gradle/wrapper/gradle-wrapper.properties
 
       - name: Build APK
         run: |
           cd project
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew --no-daemon assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: ImageTextEditor-APK
-          path: project/app/build/outputs/apk/debug/*.apk
+          path: project/app/build/outputs/apk/debug/app-debug.apk
           
