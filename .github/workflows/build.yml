@@ -23,11 +23,17 @@ jobs:
           mkdir project
           unzip ImageTextEditor-Premium-TealGold.zip -d project
 
-      - name: Upgrade Android Gradle Plugin
+      - name: Upgrade Gradle
         run: |
           cd project
           sed -i "s/com.android.tools.build:gradle:3.5.3/com.android.tools.build:gradle:7.4.2/" build.gradle
           sed -i "s/gradle-6.1.1-bin.zip/gradle-7.6.4-bin.zip/" gradle/wrapper/gradle-wrapper.properties
+
+      - name: Enable AndroidX
+        run: |
+          touch project/gradle.properties
+          echo "android.useAndroidX=true" >> project/gradle.properties
+          echo "android.enableJetifier=true" >> project/gradle.properties
 
       - name: Build APK
         run: |
